@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "YOUR_DOCKERHUB_USERNAME/business-analytics-reporting"
+        DOCKER_IMAGE = "ajay222006/business-analytics-reporting"
         DOCKER_TAG   = "latest"
     }
 
@@ -11,7 +11,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/YOUR_GITHUB_USERNAME/business-analytics-reporting.git'
+                    url: 'https://github.com/Ajay222006/Business-Analytics-Reporting.git'
             }
         }
 
