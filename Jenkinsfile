@@ -46,15 +46,26 @@ pipeline {
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
                     powershell '''
-                        $password = $env:DOCKER_PASS
-                        $password | docker login -u $env:DOCKER_USER --password-stdin
-                        
-                        if ($LASTEXITCODE -ne 0) {
-                            Write-Error "Docker login failed"
-                            exit 1
+                        # Create docker config directory
+                        $configDir = "$env:USERPROFILE/.docker"
+                        if (-not (Test-Path $configDir)) {
+                            New-Item -ItemType Directory -Path $configDir -Force | Out-Null
                         }
                         
-                        Write-Output "Docker login successful, pushing image..."
+                        # Create auth token
+                        $auth = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("$env:DOCKER_USER" + ":" + "$env:DOCKER_PASS"))
+                        
+                        # Create config.json
+                        $config = @{
+                            auths = @{
+                                "https://index.docker.io/v1/" = @{
+                                    auth = $auth
+                                }
+                            }
+                        } | ConvertTo-Json
+                        
+                        $config | Set-Content -Path "$configDir/config.json" -Force
+                        Write-Output "Docker config created"
                     '''
                     powershell "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
