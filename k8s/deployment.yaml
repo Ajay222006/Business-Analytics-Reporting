@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: analytics
-          image: YOUR_DOCKERHUB_USERNAME/business-analytics-reporting:latest
+          image: ajay222006/business-analytics-reporting:latest
           ports:
             - containerPort: 8080
