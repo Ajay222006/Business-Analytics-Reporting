@@ -45,7 +45,15 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
+                    bat '''
+                        @echo off
+                        setlocal enabledelayedexpansion
+                        (echo %DOCKER_PASS%)| docker login -u %DOCKER_USER% --password-stdin
+                        if !errorlevel! neq 0 (
+                            echo Docker login failed
+                            exit /b 1
+                        )
+                    '''
                     bat "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
